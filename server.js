@@ -1,6 +1,9 @@
 const express = require("express");
+const cors = require("cors");
 const mysql = require("mysql2");
 const app = express();
+app.use(cors());
+app.use(express.json());
 
 const mysqlConnection = mysql.createConnection({
   host: "localhost",
@@ -18,7 +21,11 @@ mysqlConnection.connect((err) => {
 });
 
 app.get("/", (req, res) => {
-  res.json("server is running");
+  const sql = "select * from employee";
+  mysqlConnection.query(sql, (err, data) => {
+    if (err) return res.json("Cannot get data from server" + err.stack);
+    res.json(data);
+  });
 });
 
 app.listen("8000", () => {
